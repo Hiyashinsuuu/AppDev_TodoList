@@ -9,13 +9,14 @@ from .models import todo
 from .forms import TodoForm
 from .serializers import TodoSerializer, UserRegistrationSerializer, UserLoginSerializer
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 class UserRegistrationView(viewsets.ViewSet):
     def create(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'User  created successfully.'}, status=201)
+            return Response({'message': 'User created successfully.'}, status=201)
         return Response(serializer.errors, status=400)
 
 class UserLoginView(viewsets.ViewSet):
@@ -57,8 +58,11 @@ class TodoViewSet(viewsets.ModelViewSet):
 def home(request):
     if request.method == 'POST':
         task = request.POST.get('task')
-        new_todo = todo(user=request.user, todo_name=task)
-        new_todo.save()
+        if task:
+            new_todo = todo(user=request.user, todo_name=task)
+            new_todo.save()
+        else:
+            messages.error(request, 'Task cannot be empty.')
 
     all_todos = todo.objects.filter(user=request.user)
     context = {
@@ -78,6 +82,7 @@ def edit_task(request, id):
         form = TodoForm(instance=task)
     return render(request, 'todoapp/edit_task.html', {'form': form})
 
-def LogoutView(request):
+@login_required
+def logout_view(request):
     logout(request)
     return redirect('login')

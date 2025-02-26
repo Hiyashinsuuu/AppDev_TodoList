@@ -1,4 +1,3 @@
-
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
@@ -14,7 +13,7 @@ urlpatterns = [
     path('', views.home, name='home-page'),
     path('api/', include(router.urls)),  # Include the API routes
     path('todo/', views.home, name='todo'),
-    path('logout/', views.LogoutView, name='logout'),
+    path('logout/', views.logout_view, name='logout'),
     path('edit/<int:id>/', views.edit_task, name='edit'),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
